@@ -42,6 +42,7 @@ import com.dcp.sm.logic.factory.GroupFactory;
 import com.dcp.sm.logic.factory.PackFactory;
 import com.dcp.sm.logic.factory.TypeFactory;
 import com.dcp.sm.logic.factory.TypeFactory.LOG_LEVEL;
+import com.dcp.sm.logic.factory.TypeFactory.PLATFORM;
 import com.dcp.sm.logic.model.Group;
 import com.dcp.sm.logic.model.Pack;
 import com.dcp.sm.logic.factory.TypeFactory.INSTALL_TYPE;
@@ -319,13 +320,30 @@ public class TaskIzpackCompile extends Task<Boolean>
             // Pack Install Path correction to standard ("folder/subfolder")
             if (!P.getInstallPath().equals("")) {
                 P.setInstallPath(P.getInstallPath().replace('\\', '/'));
-                if (P.getInstallPath().startsWith("/") && OSValidator.isWindows()) {
+                
+                // saar Only if we pick "Windows OS" && not picked "absolute path" then check rules for first character
+                //  //&& OSValidator.isWindows()) { saar: removed current OS test. We might be on Windows but we prepare something for Linux/OSX
+                if (P.getInstallPath().startsWith("/") && P.getInstallOs() == PLATFORM.WINDOWS && !P.isAbsolutePath() ) { 
                     P.setInstallPath(P.getInstallPath().substring(1));
                 }
+                
+                // remove last character if it is: "/"
                 if (P.getInstallPath().endsWith("/")) {
                     P.setInstallPath(P.getInstallPath().substring(0, P.getInstallPath().length()-1));
                 }
             }
+            
+// Original code            
+//            // Pack Install Path correction to standard ("folder/subfolder")
+//            if (!P.getInstallPath().equals("")) {
+//                P.setInstallPath(P.getInstallPath().replace('\\', '/'));
+//                if (P.getInstallPath().startsWith("/") && OSValidator.isWindows()) {
+//                    P.setInstallPath(P.getInstallPath().substring(1));
+//                }
+//                if (P.getInstallPath().endsWith("/")) {
+//                    P.setInstallPath(P.getInstallPath().substring(0, P.getInstallPath().length()-1));
+//                }
+//            }
         }
         
         if (!notRequired) {// if all packs are required

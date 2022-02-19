@@ -40,6 +40,7 @@ public class Pack implements Serializable
     public boolean selected = true;//Is selected
     public boolean hidden = false;//Is hidden
     public boolean override = true;//If pack will override existing pack
+    public boolean absolutePath = false;//Saar: If pack will use path as "absolute" on or not
     public boolean shortcut = false;//If pack will have a shortcut created for it
     //Icon
     public String icon = "";//Icon file path

@@ -51,6 +51,7 @@ public class Pack implements Serializable
     private boolean selected = true;//Is selected
     private boolean hidden = false;//Is hidden
     private boolean override = true;//If pack will override existing pack
+    private boolean absolutePath = false;//Saar: If pack will use absolutePath for existing pack
     private boolean shortcut = false;//If pack will have a shortcut created for it
     //Icon
     private String icon = "";//Icon file path
@@ -110,6 +111,7 @@ public class Pack implements Serializable
         selected = pack.selected;
         hidden = pack.hidden;
         override = pack.override;
+        absolutePath = pack.absolutePath; // saar
         shortcut = pack.shortcut;
         silent_install = pack.silent_install;
         icon = pack.icon;
@@ -142,6 +144,7 @@ public class Pack implements Serializable
         selected = pack.selected;
         hidden = pack.hidden;
         override = pack.override;
+        absolutePath = pack.absolutePath; // saar - added absolutePath to: "dcp.logic.model.Pack"
         shortcut = pack.shortcut;
         silent_install = pack.silent_install;
         icon = pack.icon;
@@ -286,6 +289,8 @@ public class Pack implements Serializable
     public void setHidden(boolean hidden) { this.hidden = hidden; }
     public boolean isOverride() { return override; }
     public void setOverride(boolean override) { this.override = override; }
+    public boolean isAbsolutePath() { return absolutePath; } // saar
+    public void setAbsolutePath(boolean absolutePath) { this.absolutePath = absolutePath; } // saar    
     public boolean isShortcut() { return shortcut; }
     public void setShortcut(boolean shortcut) { this.shortcut = shortcut; }
     

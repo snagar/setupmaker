@@ -123,7 +123,15 @@ public class PackWriter extends StaxMateWriter
         if (pack.getFileType() ==  FILE_TYPE.Folder && pack.getInstallType() == INSTALL_TYPE.EXTRACT) {//Folder unzip
             SMOutputElement pack_file = xmlPack.addElement("fileset");//<fileset 
             pack_file.addAttribute("dir", pack.getPath());//dir="path/to/file"
-            pack_file.addAttribute("targetdir", "$INSTALL_PATH/"+pack.getInstallPath());//targetDir="$INSTALL_PATH/Group"
+            
+            // saar - extract files to absolute or relative location
+            if (pack.isAbsolutePath()) // saar implement absolutePath
+                pack_file.addAttribute("targetdir",pack.getInstallPath()); //saar targetDir=Group install path
+            else
+                pack_file.addAttribute("targetdir", "$INSTALL_PATH/"+pack.getInstallPath());//targetDir="$INSTALL_PATH/Group"
+            
+//            pack_file.addAttribute("targetdir", "$INSTALL_PATH/"+pack.getInstallPath());//targetDir="$INSTALL_PATH/Group"
+            
             if (pack.isOverride())//override="asktrue"
                 pack_file.addAttribute("override", "true");
             else pack_file.addAttribute("override", "false");
@@ -131,7 +139,14 @@ public class PackWriter extends StaxMateWriter
         else {//Normal
             SMOutputElement pack_file = xmlPack.addElement("file");//<file 
             pack_file.addAttribute("src", pack.getPath());//src="path/to/file"
-            pack_file.addAttribute("targetdir", "$INSTALL_PATH/"+pack.getInstallPath());//targetDir="$INSTALL_PATH/Group"
+            
+            if (pack.isAbsolutePath()) // saar implement absolutePath
+                pack_file.addAttribute("targetdir",pack.getInstallPath()); //saar targetDir=Group install path
+            else
+                pack_file.addAttribute("targetdir", "$INSTALL_PATH/"+pack.getInstallPath());//targetDir="$INSTALL_PATH/Group"
+            
+//            pack_file.addAttribute("targetdir", "$INSTALL_PATH/"+pack.getInstallPath());//targetDir="$INSTALL_PATH/Group"
+            
             if (pack.isOverride())//override="asktrue"
                 pack_file.addAttribute("override", "true");
             else pack_file.addAttribute("override", "false");

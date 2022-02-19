@@ -452,6 +452,15 @@
 													</FillPane>
 												</TablePane.Row>
 												
+												<!-- Saar: added new row for absolute path -->
+												<TablePane.Row height="-1">
+													<FillPane orientation="Horizontal">														
+														<Checkbox bxml:id="cbAbsolutePath" buttonData="Absolute Path"
+															tooltipText="Copy to absolute path"
+															selected="false" enabled="false" />														
+													</FillPane>
+												</TablePane.Row>
+																								
 											</TablePane>
 										</TablePane.Row>
 									</TablePane>

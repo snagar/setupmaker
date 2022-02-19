@@ -1,1 +1,1 @@
-ant -file ../release.xml release
+ant -file ../release_unix.xml release

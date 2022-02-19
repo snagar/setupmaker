@@ -1,3 +1,3 @@
 cd ..
-ant -file release.xml dcp.console && mv DCPSetupMaker-* releases\
+ant -file release_unix.xml dcp.console && mv DCPSetupMaker-* releases\
 cd cmd

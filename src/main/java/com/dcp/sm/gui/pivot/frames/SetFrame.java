@@ -158,6 +158,7 @@ public class SetFrame extends FillPane implements Bindable
     @BXML private Checkbox cbSelected;// If pack is selected or not
     @BXML private Checkbox cbHidden;// If pack is hidden or not
     @BXML private Checkbox cbOverride;// If pack will override existing install or not
+    @BXML private Checkbox cbAbsolutePath;// Saar: If pack will write to absolute install folder path and not relative to install path
     @BXML private Checkbox cbShortcut;// If a shortcut to this pack is created
     // Radio Buttons
     @BXML private RadioButton rbOsAll;// OS install platform
@@ -932,6 +933,26 @@ public class SetFrame extends FillPane implements Bindable
             }
         });
         
+        // Saar added absolute path checkbox support
+        cbAbsolutePath.getButtonPressListeners().add(new ButtonPressListener() {
+            @Override public void buttonPressed(Button bt)
+            {
+                //Disable tristate
+                if (bt.getState() == State.MIXED) { bt.setTriState(false); bt.setSelected(true); }
+                
+                if (!multi_selection) getSelectedPack().setAbsolutePath(bt.isSelected());//1 selected pack
+                else {//Multi packs selected
+                    Sequence<Pack> list = getSelectedPacks();
+                    for(int i = 0; i < list.getLength(); i++)
+                        list.get(i).setAbsolutePath(bt.isSelected());
+                }
+                setModified(true);//Modified flag
+            }
+        });
+        
+        
+                
+        
         cbShortcut.getButtonPressListeners().add(new ButtonPressListener() {
             @Override public void buttonPressed(Button bt)
             {
@@ -1017,25 +1038,41 @@ public class SetFrame extends FillPane implements Bindable
         rbOsAll.getButtonPressListeners().add(new ButtonPressListener() {// All OS
             @Override public void buttonPressed(Button bt)
             {
-                if (bt.isSelected()) ASetInstallOS.perform(bt);
+                if (bt.isSelected()) {                
+                    ASetInstallOS.perform(bt);
+                    cbAbsolutePath.setEnabled(false); // saar   
+                }
             }
         });
         rbOsWin.getButtonPressListeners().add(new ButtonPressListener() {// Windows OS
             @Override public void buttonPressed(Button bt)
             {
-                if (bt.isSelected()) ASetInstallOS.perform(bt);
+                if (bt.isSelected()) {
+                    ASetInstallOS.perform(bt);
+                    if (rbExecute.isSelected() == false)
+                        cbAbsolutePath.setEnabled(true); // saar
+                    
+                }
             }
         });
         rbOsLin.getButtonPressListeners().add(new ButtonPressListener() {// Linux OS
             @Override public void buttonPressed(Button bt)
             {
-                if (bt.isSelected()) ASetInstallOS.perform(bt);
+                if (bt.isSelected()) {
+                    ASetInstallOS.perform(bt);
+                    if (rbExecute.isSelected() == false)
+                        cbAbsolutePath.setEnabled(true); // saar
+                }
             }
         });
         rbOsMac.getButtonPressListeners().add(new ButtonPressListener() {// Mac OS
             @Override public void buttonPressed(Button bt)
             {
-                if (bt.isSelected()) ASetInstallOS.perform(bt);
+                if (bt.isSelected()) {
+                    ASetInstallOS.perform(bt);
+                    if (rbExecute.isSelected() == false)
+                        cbAbsolutePath.setEnabled(true); // saar 
+                }
             }
         });
 
@@ -1081,12 +1118,16 @@ public class SetFrame extends FillPane implements Bindable
                         inPInstallPath.setEnabled(false);
                         btIPErase.setEnabled(false);
                         cbOverride.setEnabled(false);
+                        cbAbsolutePath.setEnabled(false); // saar                        
                         cbShortcut.setEnabled(false);
                     }
                     else {
                         inPInstallPath.setEnabled(true);
-                        btIPErase.setEnabled(true);
+                        btIPErase.setEnabled(true);                        
                         cbOverride.setEnabled(true);
+                        if (rbOsAll.isSelected() == false)
+                            cbAbsolutePath.setEnabled(true); // saar
+                        
                         cbShortcut.setEnabled(true);
                     }
                 }
@@ -1410,6 +1451,7 @@ public class SetFrame extends FillPane implements Bindable
         rbExtract.setEnabled(false);
         rbCopy.setEnabled(false);
         cbOverride.setEnabled(false);
+        cbAbsolutePath.setEnabled(false); // saar        
         cbShortcut.setEnabled(false);
         btShortcutAdvanced.setEnabled(false);
         cbRequired.setEnabled(false);
@@ -1428,6 +1470,7 @@ public class SetFrame extends FillPane implements Bindable
         rbExtract.setSelected(false);
         rbCopy.setSelected(false);
         cbOverride.setSelected(false);
+        cbAbsolutePath.setEnabled(false); // saar        
         cbShortcut.setSelected(false);
         cbRequired.setSelected(false);
         cbSelected.setSelected(false);
@@ -1485,6 +1528,7 @@ public class SetFrame extends FillPane implements Bindable
         cbSelected.setTriState(false); cbSelected.setEnabled(true);// Set selected
         cbHidden.setTriState(false); cbHidden.setEnabled(true);// Set hidden
         cbOverride.setTriState(false); cbOverride.setEnabled(true);// Set override
+        cbAbsolutePath.setTriState(false); cbAbsolutePath.setEnabled(true);//Saar: Set absolute path
         cbShortcut.setTriState(false); cbShortcut.setEnabled(true);// Set Shortcut
         inDescription.setEnabled(true);// Set Description
         inPInstallPath.setEnabled(true);// Set Install Path
@@ -1509,36 +1553,75 @@ public class SetFrame extends FillPane implements Bindable
         // Global: bind radio button to install type
         assert pack != null;
         
+//        System.out.println ("setPackProperties"); // saar debug
+        
         switch(pack.getInstallType()) {
         case COPY:
             rbCopy.setSelected(true);
+//            System.out.println ("COPY"); // saar debug
+//            if (rbOsAll.isSelected())
+//                cbAbsolutePath.setEnabled(false); // Saar
+//            else 
+//                cbAbsolutePath.setEnabled(true); // Saar
             break;
         case EXTRACT:
             rbExtract.setSelected(true);
+//            System.out.println ("EXTRACT"); // saar debug
+//            if (rbOsAll.isSelected())
+//                cbAbsolutePath.setEnabled(false); // Saar
+//            else 
+//                cbAbsolutePath.setEnabled(true); // Saar
             break;
         case EXECUTE:
+//            System.out.println ("Execute"); // saar debug
             rbExecute.setSelected(true);
             cbOverride.setEnabled(false);
+            cbAbsolutePath.setEnabled(false); // Saar
             cbShortcut.setEnabled(false);
             inPInstallPath.setEnabled(false);
         break;
         case DEFAULT:
             rbCopy.setSelected(true);
+//            System.out.println ("Default"); // saar debug
+//            if (rbOsAll.isSelected())
+//                cbAbsolutePath.setEnabled(false); // Saar
+//            else 
+//                cbAbsolutePath.setEnabled(true); // Saar
+
+            
             break;
         }
         
         switch(pack.getInstallOs()) {
         case ALL:
             rbOsAll.setSelected(true);
+            cbShortcut.setEnabled(false);   
+            cbAbsolutePath.setEnabled(false); // Saar
+            
             break;
         case WINDOWS:
             rbOsWin.setSelected(true);
+//            System.out.println ("WINDOWS"); // saar debug
+//            if (rbExecute.isSelected())
+//                cbAbsolutePath.setEnabled(false); // Saar
+//            else 
+//                cbAbsolutePath.setEnabled(true); // Saar
             break;
         case LINUX:
             rbOsLin.setSelected(true);
+//            System.out.println ("LINUX"); // saar debug
+//            if (rbExecute.isSelected())
+//                cbAbsolutePath.setEnabled(false); // Saar
+//            else 
+//                cbAbsolutePath.setEnabled(true); // Saar
             break;
         case MAC:
             rbOsMac.setSelected(true);
+//            System.out.println ("MAC"); // saar debug
+//            if (rbExecute.isSelected())
+//                cbAbsolutePath.setEnabled(false); // Saar
+//            else 
+//                cbAbsolutePath.setEnabled(true); // Saar
             break;
         }
         
@@ -1554,11 +1637,13 @@ public class SetFrame extends FillPane implements Bindable
             break;
         }
         
+                
         cbSilent.setSelected(pack.isSilentInstall());
         cbRequired.setSelected(pack.isRequired());
         cbSelected.setSelected(pack.isSelected());
         cbHidden.setSelected(pack.isHidden());
         cbOverride.setSelected(pack.isOverride());
+        cbAbsolutePath.setSelected(pack.isAbsolutePath()); // saar. Added to Pack.java class isAbsolutePath() and setAbsolutePath()
         cbShortcut.setSelected(pack.isShortcut());
         btShortcutAdvanced.setEnabled((pack.isShortcut() == true && pack.getInstallType() == INSTALL_TYPE.EXTRACT)?true:false);
         inDescription.setText(pack.getDescription());
@@ -1567,6 +1652,7 @@ public class SetFrame extends FillPane implements Bindable
         inName.setText(pack.getInstallName());
         inVersion.setText(pack.getInstallVersion());
         inInstallGroups.setText(pack.getInstallGroups());
+               
         
         boolean GD = isGroupDependency();
         dependencyFill(GD);// update dependency filter
@@ -1596,9 +1682,10 @@ public class SetFrame extends FillPane implements Bindable
         boolean sel = list.get(0).isSelected();
         boolean hid = list.get(0).isHidden();
         boolean over = list.get(0).isOverride();
+        boolean absolute = list.get(0).isAbsolutePath();
         boolean shortcut = list.get(0).isShortcut();
         boolean silentinstall = list.get(0).isSilentInstall();
-        boolean reqMix=false, selMix=false, hidMix=false, overMix=false, shortMix=false, silMix=false;
+        boolean reqMix=false, selMix=false, hidMix=false, overMix=false, shortMix=false, silMix=false, absoluteMix=false;
         
         FILE_TYPE FT = list.get(0).getFileType();
         boolean isSameFT = true;
@@ -1697,7 +1784,10 @@ public class SetFrame extends FillPane implements Bindable
         
         if (!overMix) cbOverride.setSelected(over);
         else { cbOverride.setTriState(true); cbOverride.setState(State.MIXED); }
-
+        
+        if (!absoluteMix) cbAbsolutePath.setSelected(absolute); // saar
+        else { cbAbsolutePath.setTriState(true); cbAbsolutePath.setState(State.MIXED); } // saar
+        
         if (!shortMix) cbShortcut.setSelected(shortcut);
         else { cbShortcut.setTriState(true); cbShortcut.setState(State.MIXED); }
 
@@ -1776,6 +1866,7 @@ public class SetFrame extends FillPane implements Bindable
         
         // Enable components
         cbOverride.setEnabled(true);// Set override
+        cbAbsolutePath.setEnabled(true);// Saar: Set override
         cbShortcut.setEnabled(true);// Set shortcut
         cbRequired.setEnabled(true);// Set required
         cbSelected.setEnabled(true);// Set selected
@@ -1823,5 +1914,17 @@ public class SetFrame extends FillPane implements Bindable
         
         setModified(true);
     }
+    
+//    /**
+//     * Saar: set Absolut State based on current OS pick and action on file
+//     */
+//    private void syncAbsolutePathVisibility (Pack pack)
+//    {
+//        if (pack.getInstallType() != EXECUTE && pack.getInstallOs() != ALL ) // if true then we need to make sure that we are not in execute mode or ALL Platforms
+//            cbAbsolutePath.setEnabled (true); // true
+//        else
+//            cbAbsolutePath.setEnabled (false); // false
+//        
+//    }
 
 }
