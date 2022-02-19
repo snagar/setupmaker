@@ -81,8 +81,9 @@
     <str id="PathInputPanel.notValid" txt="The chosen directory does not contain the required product."/>
 
 		<!-- TargetPanel strings -->
-    <str id="TargetPanel.info" txt="Select the installation path: "/>
-    <str id="TargetPanel.browse" txt="Browse..."/>
+    <!-- str id="TargetPanel.info" txt="Select the installation path: "/ -->
+    <str id="TargetPanel.info" txt="Select X-Plane root installation path (Do not pick subfolders in it): "/>
+    <str id="TargetPanel.browse" txt="Browse For X-Plane Folder..."/>
     <str id="TargetPanel.warn" txt="The directory already exists! Are you sure you want to install here and possibly overwrite existing files?"/>
     <str id="TargetPanel.empty_target" txt="You have not specified a target location! Is this correct?"/>
     <str id="TargetPanel.createdir" txt="The target directory will be created: "/>
